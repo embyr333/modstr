@@ -1,10 +1,8 @@
-# 15th commit - use a lambda for button click command to eliminate 
-# need for single-use function; (no change in behaviour) 
+# 16th commit - removed a now-redundant variable & used a ternary expression to slightly condense code elsewhere
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
-        no_input_message = 'Please enter the query string you want to process'
-        return no_input_message
+        return 'Please enter the query string you want to process'
 
     key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
                'column', 'constraint', 'create', 'database', 'default', 'delete', 'desc', 'distinct', 'drop', 
@@ -38,10 +36,7 @@ def upper_SQL_keywords(s: str): # Note1
             new_list.append('\'' + even_sections[i] + '\'') # ...adding back quote marks*
     new_string = ' '.join(new_list)
 
-    if semicolon == True:
-        new_string = new_string.rstrip() + ';'
-
-    return new_string 
+    return new_string.rstrip() + ';' if semicolon else new_string
 
 
 # GUI...
