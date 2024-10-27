@@ -1,23 +1,25 @@
-# 11th commit - added remaining keywords(/phrases)
+# 12th commit - changing keyset to hold individaual words only
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
         no_input_message = 'Please enter the query string you want to process'
         return no_input_message
 
-    # ---added remaining keywords and phrases as per https://www.w3schools.com/sql/sql_ref_keywords.asp; Note3
-    key_set = ('add', 'add constraint', 'all', 'alter', 'alter column', 'alter table', 'and', 'any', 
-               'as', 'asc', 'backup database', 'between', 'case', 'check', 'column', 'constraint', 
-               'create', 'create database', 'create index', 'create or replace view', 'create table', 
-               'create procedure', 'create unique index', 'create view', 'database', 'default', 
-               'delete', 'desc', 'distinct', 'drop', 'drop column', 'drop constraint', 'drop database', 
-               'drop default', 'drop index', 'drop table', 'drop view', 'exec', 'exists', 'foreign key', 
-               'from', 'full outer join', 'group by', 'having', 'in', 'index', 'inner join', 'insert into', 
-               'insert into select', 'is null', 'is not null', 'join', 'left join', 'like', 'limit', 'not', 
-               'not null', 'or', 'order by', 'outer join', 'primary key', 'procedure', 'right join', 
-               'rownum', 'select', 'select distinct', 'select into', 'select top', 'set', 'table', 'top', 
-               'truncate table', 'union', 'union all', 'unique', 'update', 'values', 'view', 'where'
-		) 
+    # ---changing multi-word strings to individual words (and removing any resulting duplicates words); Note3.
+    # Leaving 'original order' in this version for ease or comparison to previous, but...
+    # TODO: put in alphabetical order (again), and condense to ~equal-length lines
+    key_set = ('add', 'constraint', 'all', 'alter', 'column', 'table', 'and', 'any', 
+               'as', 'asc', 'backup', 'database', 'between', 'case', 'check', 
+               'create', 'index', 'or', 'replace', 'view', 
+               'procedure', 'unique', 'default', 
+               'delete', 'desc', 'distinct', 'drop', 
+               'exec', 'exists', 'foreign', 'key', 
+               'from', 'full', 'outer' , 'join', 'group', 'by', 'having', 'in', 'inner', 'insert', 'into', 
+               'select', 'is', 'not', 'left', 'like', 'limit', 
+               'order', 'primary', 'right', 
+               'rownum', 'top', 'set',  
+               'truncate', 'union', 'update', 'values', 'where',
+		        ) 
 
     semicolon = False
     if s[-1] == ';':
@@ -91,9 +93,10 @@ select first_name, last_name, gender from patients where gender is 'M is gender'
 The whole thing is now rather messy, with some (inefficient) string concatenation, 
 and might be better tried with regex, but this approach is probably good enough for now.
 
-Note3: Decided to include any multi-word phrases as such/separetely, even if they contain
-words that are also stand-alone keywords; can adjust if needed.
-
+Note3: List from as per https://www.w3schools.com/sql/sql_ref_keywords.asp 
+but including each word of any multi-word phrases as separate entries, not including 'null'.
+I think this will still be suitable, but if not will have to change from
+odd_sections[i].split()  to a more complex search and replace strategy.
 
 
 Example1
