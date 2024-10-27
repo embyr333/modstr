@@ -1,4 +1,4 @@
-# 7th commit
+# 8th commit
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
@@ -7,22 +7,26 @@ def upper_SQL_keywords(s: str): # Note1
 
     key_set = ('select', 'from', 'where', 'is', 'and', 'null') # TODO continue to extend as needed
 
+
+
+    # ---Iteration8: adding...
+    semicolon = False
+    if s[-1] == ';':
+        semicolon = True
+        s = s[:-1]
+
+
+
     sections = s.split('\'') # odd sections will be non-quoted items; Note2
-    # print(sections) # temp check
     odd_sections = [sections[i] for i in range(len(sections)) if i % 2 == 0] # index is even for odds
     even_sections = [sections[i] for i in range(len(sections)) if i % 2 != 0] # index is odd for evens
-    # print(odd_sections) # temp check
-    # print(even_sections) # temp check
 
     for i in range(len(odd_sections)):
         words = odd_sections[i].split()
         for j in range(len(words)):
             if words[j] in key_set:
                 words[j] = words[j].upper()
-        # print(words) # temp check
         odd_sections[i] = ' '.join(words)
-        # print(odd_sections[i]) # temp check
-    # print(odd_sections) # temp check
 
     # Combine (processed) odd sections into new list with (unprocessed) evens...
     new_list = []
@@ -30,12 +34,19 @@ def upper_SQL_keywords(s: str): # Note1
         new_list.append(odd_sections[i])
         if i < len(even_sections):
             new_list.append('\'' + even_sections[i] + '\'') # ...adding back quote marks*
-    # print(new_list) # temp check
     new_string = ' '.join(new_list)
+
+
+
+    # ---Iteration8: replacing this...
     # If there is a semicolon at end, remove the extra space that has now been introduced (though not essential)
-    # if new_string[-1] == ';': # ---fixing bug now...
-    if new_string[-1] == ';' and new_string[-1] == ' ': 
-        new_string = new_string[:-2] + new_string[-1]
+    # if new_string[-1] == ';' and new_string[-1] == ' ': 
+    #     new_string = new_string[:-2] + new_string[-1]
+    # ...and adding this...
+    if semicolon == True:
+        new_string = new_string.rstrip() + ';'
+
+
 
     print(new_string) # (*joining on quote mark here would be problematic as need extra space upstream or downstream)
 
@@ -49,12 +60,22 @@ upper_SQL_keywords("select first_name, last_name, gender from patients where gen
 # SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M is gender';
 print()
 
-# Paste input between the (double) quotes here...
+print('Example3 - keyword adjacent to (terminal) semicolon') 
 upper_SQL_keywords("select first_name, last_name from patients where allergies is null;")
-# ---discovered bug with above input - if no quote around final word, last char is deleted, unless no ; ...fixed
+# ---Iteration8: had discovered bug with above input - the null is not uppercased
+# ...realised because it is adjacant to the semicolon
+# ...might be best to just remove any (terminal) semicolon at the beginning then add back
+# (then would no need the new final processing step to remove the extra space added), --> did
+# TODO: Also, should consider if want to allow processing of muliple lines...
 
-# TODO: Consider making a GUI
+print('Example4 (no semicolon)') 
+upper_SQL_keywords("select first_name, last_name from patients where allergies is null")
+
+# Paste input between the (double) quotes here...
+upper_SQL_keywords("")
+
 # TODO: Further test cases will be tried as I use it (and of course add further items to key_set)
+# TODO: Consider making a GUI
 
 '''
 Note1: Using the optional arg type specifier has the advantage of allowing
