@@ -1,16 +1,24 @@
-# 4th commit - Dead end (see end Note1)!
+# 5th commit - Another dead end - more than one thing wrong here!
 
-import shlex # Note1
-
-def upper_SQL_keywords(s: str): # Note2
+def upper_SQL_keywords(s: str): # Note1
     key_set = ('select', 'from', 'where', 'is') # TODO extend as needed
-    word_list = shlex.split(s)
-    # print(word_list) # temp check
-    for i in range(len(word_list)):
-        if word_list[i] in key_set:
-            word_list[i] = word_list[i].upper()
-    print(' '.join(word_list))
 
+    # word_list = s.split()
+    word_list = s.split('\'')
+
+    print(word_list) # temp check
+
+    # for i in range(0, len(word_list), 2): # only process odd items for uppercase
+    # ...on 2nd thoughts if do parity checking in loop instead, can do both uppercasing
+    # of odd items and quote-reinstatement for even items in same loop...
+    for i in range(0, len(word_list), 2): # only proxcess odd items
+        if i % 2 != 0 and word_list[i] in key_set: # only do this for odd items
+            word_list[i] = word_list[i].upper()
+        else: # for the even items do...
+            word_list[i] = '\'' + word_list[i] + '\''
+    print(word_list) # temp check
+
+    print(' '.join(word_list))
 
 # Example
 upper_SQL_keywords("select first_name, last_name, gender FROM patients where gender is 'M';")
@@ -20,18 +28,17 @@ print()
 # If query uses single (or no) quotes internally, paste between the single quotes here...
 upper_SQL_keywords("select first_name, last_name, gender from patients where gender is 'M is gender';")
 # Otherwise can use...
-upper_SQL_keywords('')
+# upper_SQL_keywords('')
 # TODO: Consider whether there a better way to deal with this (without making a GUI - may do later)
 
 '''
-Note1: To deal with posibility of words from key_set used within a string in query, 
+TODO: Deal with posibility of words from key_set used within a string in query, 
 i.e. NOT as keywords, so would NOT want to mod, e.g. 2nd 'is' in the following...
 select first_name, last_name, gender from patients where gender is 'M is gender';
-...using shlex.split() instead of string's split() to preserve quoted substrings. Thanks to folks at 
-https://stackoverflow.com/questions/79968/split-a-string-by-spaces-preserving-quoted-substrings-in-python
-Update: bah, just realised that the quote characters themselves are lost!
+[Iteration 4 was dead end with shelx.split() - does not preserve quotation marks]
 
-Note2: Using the optional arg type specifier has the advantage of allowing
+Note1: Using the optional arg type specifier has the advantage of allowing
 IDE to make builtin method suggestions on typing dot after string etc.
 '''
+
 
