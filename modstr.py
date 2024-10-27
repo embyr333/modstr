@@ -1,4 +1,5 @@
-# 14th commit - remove unneeded submit_button variable
+# 15th commit - use a lambda for button click command to eliminate 
+# need for single-use function; (no change in behaviour) 
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
@@ -57,14 +58,10 @@ input_field.grid(row=1, column=0)
 
 output = StringVar()
 
-# Button-click function sets output text in 4th row of grid (have to put this before button)
-def submit_click():
-    output.set(upper_SQL_keywords(input_field.get())) 
-    # input_field.delete(0, END) # (optional, to remove entered text after output appears)
-    # (or could add a 'Clear' button and associated function)
-
-# 'Submit' button on 3rd row grid
-Button(root_widget, text = 'Submit', command = submit_click, bg='#C8C8C8').grid(row=2, column=0, padx=5)
+# 'Submit' button on 3rd row grid sets output text in 4th row; Note4
+Button(root_widget, text = 'Submit', 
+       command = lambda: output.set(upper_SQL_keywords(input_field.get())), 
+       bg='#C8C8C8').grid(row=2, column=0, padx=5)
 
 output_field = Entry(root_widget, width = 100, fg = 'blue', textvariable=output, 
                      state='readonly', font=("Courier", 10)) # output textbox 
@@ -88,6 +85,14 @@ Note3: List from as per https://www.w3schools.com/sql/sql_ref_keywords.asp
 but including each word of any multi-word phrases as separate entries, not including 'null'.
 I think this will still be suitable, but if not will have to change from
 odd_sections[i].split()  to a more complex search and replace strategy.
+
+Note4: Provisionally replaced command value of submit_click with a lambda in 15th Commit, 
+as the submit_click() function (see below) was used only here, and had only 1 expression. 
+def submit_click():
+    output.set(upper_SQL_keywords(input_field.get())) 
+    # input_field.delete(0, END) # (optional, to remove entered text after output appears)
+    # (or could add a 'Clear' button and associated function)
+...of course may revert if do add extra expressions such as the delete call
 
 
 Example1
