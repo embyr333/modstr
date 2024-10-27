@@ -1,4 +1,5 @@
-# 16th commit - removed a now-redundant variable & used a ternary expression to slightly condense code elsewhere
+# 17th commit - (provisonally) uppercase (MySQL) function names also 
+# (if written, s per convention, without a space before the opening parenthesis)
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
@@ -10,8 +11,18 @@ def upper_SQL_keywords(s: str): # Note1
                'insert', 'into', 'is', 'join', 'key', 'left', 'like', 'limit', 'not', 'or', 'order', 'outer', 
                'primary', 'procedure', 'replace', 'right', 'rownum', 'select', 'set', 'table', 'top', 
                'truncate', 'union', 'unique', 'update', 'values', 'view', 'where'
-		        ) 
-
+               ) 
+    
+    # ---added; Note5
+    fn_set = ('sum', 'avg', 'count', 'min', 'max', 'ucase', 'lcase', 'mid', 'length', 'round', 'now', 'format', 
+              'curdate', 'curtime', 'sysdate', 'current_date', 'current_time', 'day', 'month', 'year', 'hour', 
+              'minute', 'second', 'date_format', 'ifnull', 'isnull', 'concat', 'replace', 'substring', 'trim', 
+              'ltrim', 'rtrim', 'coalesce', 'left', 'right', 'ascii', 'char_length', 'instr', 'locate', 'strpos', 
+              'substring_index', 'find_in_set', 'lower', 'upper', 'abs', 'acos', 'asin', 'atan', 'ceiling', 
+              'floor', 'mod', 'rand', 'sign', 'sqrt', 'pow', 'truncate', 'log', 'exp', 'pi', 'degrees', 
+              'radians', 'sin', 'cos', 'tan', 'cot'
+              )
+    
     semicolon = False
     if s[-1] == ';':
         semicolon = True
@@ -24,8 +35,16 @@ def upper_SQL_keywords(s: str): # Note1
     for i in range(len(odd_sections)):
         words = odd_sections[i].split()
         for j in range(len(words)):
-            if words[j] in key_set:
-                words[j] = words[j].upper()
+            word = words[j] # (---added to reduce repetitions of words[j] lookup expression)
+            if word in key_set:
+                word = word.upper()
+            # ---added
+            elif word.__contains__('('):  
+                p_index = word.index('(')
+                if word[:p_index] in fn_set: # Note5
+                    word = word[:p_index].upper() + word[p_index:]
+            words[j] = word
+
         odd_sections[i] = ' '.join(words)
 
     # Combine (processed) odd sections into new list with (unprocessed) evens...
@@ -88,6 +107,18 @@ def submit_click():
     # input_field.delete(0, END) # (optional, to remove entered text after output appears)
     # (or could add a 'Clear' button and associated function)
 ...of course may revert if do add extra expressions such as the delete call
+
+Note5: Decided (provisionally) to uppercase (MySQL) function names also. My current approach
+assumes (and only works for) 'conventionally written' calls with no space between function name
+and opening parenthesis. It means that the check against fn_set (and the presence of the set at all)
+is not actually needed, though I have included it to exclude mis-processing of any column names
+that might happen to have an opening parentnesis within them (unlikely, admittedly). Processing of
+function calls with a space could be included by changing   
+if word in key_set: 
+to
+if word in key_set or if word in fn_set:
+but that would open the possibility of mis-processing any column names that happened to be the 
+same as function names...something that might also happen for keywords, though probaby less likely?
 
 
 Example1
