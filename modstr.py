@@ -1,12 +1,23 @@
-# 10th commit - removed the console-print statements & added a few more keywords
+# 11th commit - added remaining keywords(/phrases)
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
         no_input_message = 'Please enter the query string you want to process'
         return no_input_message
 
-    key_set = ('select', 'from', 'where', 'is', 'and', 'null', 'like', 'in', 'between', 'and') 
-    # ... TODO continue to extend as needed
+    # ---added remaining keywords and phrases as per https://www.w3schools.com/sql/sql_ref_keywords.asp; Note3
+    key_set = ('add', 'add constraint', 'all', 'alter', 'alter column', 'alter table', 'and', 'any', 
+               'as', 'asc', 'backup database', 'between', 'case', 'check', 'column', 'constraint', 
+               'create', 'create database', 'create index', 'create or replace view', 'create table', 
+               'create procedure', 'create unique index', 'create view', 'database', 'default', 
+               'delete', 'desc', 'distinct', 'drop', 'drop column', 'drop constraint', 'drop database', 
+               'drop default', 'drop index', 'drop table', 'drop view', 'exec', 'exists', 'foreign key', 
+               'from', 'full outer join', 'group by', 'having', 'in', 'index', 'inner join', 'insert into', 
+               'insert into select', 'is null', 'is not null', 'join', 'left join', 'like', 'limit', 'not', 
+               'not null', 'or', 'order by', 'outer join', 'primary key', 'procedure', 'right join', 
+               'rownum', 'select', 'select distinct', 'select into', 'select top', 'set', 'table', 'top', 
+               'truncate table', 'union', 'union all', 'unique', 'update', 'values', 'view', 'where'
+		) 
 
     semicolon = False
     if s[-1] == ';':
@@ -79,6 +90,10 @@ select first_name, last_name, gender from patients where gender is 'M is gender'
 [Iteration 4 was dead end with shelx.split() - does not preserve quotation marks]
 The whole thing is now rather messy, with some (inefficient) string concatenation, 
 and might be better tried with regex, but this approach is probably good enough for now.
+
+Note3: Decided to include any multi-word phrases as such/separetely, even if they contain
+words that are also stand-alone keywords; can adjust if needed.
+
 
 
 Example1
