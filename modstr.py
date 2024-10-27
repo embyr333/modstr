@@ -1,11 +1,10 @@
-# 13th commit - put key_set words in alphabetical order
+# 14th commit - remove unneeded submit_button variable
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
         no_input_message = 'Please enter the query string you want to process'
         return no_input_message
 
-    # ---now in alphabetical order; Note3.
     key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
                'column', 'constraint', 'create', 'database', 'default', 'delete', 'desc', 'distinct', 'drop', 
                'exec', 'exists', 'foreign', 'from', 'full', 'group', 'having', 'in', 'index', 'inner', 
@@ -64,9 +63,8 @@ def submit_click():
     # input_field.delete(0, END) # (optional, to remove entered text after output appears)
     # (or could add a 'Clear' button and associated function)
 
-# Button on 3rd row grid
-submit_button = Button(root_widget, text = 'Submit', 
-                       command = submit_click, bg='#C8C8C8').grid(row=2, column=0, padx=5)
+# 'Submit' button on 3rd row grid
+Button(root_widget, text = 'Submit', command = submit_click, bg='#C8C8C8').grid(row=2, column=0, padx=5)
 
 output_field = Entry(root_widget, width = 100, fg = 'blue', textvariable=output, 
                      state='readonly', font=("Courier", 10)) # output textbox 
