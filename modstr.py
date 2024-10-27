@@ -1,24 +1,17 @@
-# 12th commit - changing keyset to hold individaual words only
+# 13th commit - put key_set words in alphabetical order
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
         no_input_message = 'Please enter the query string you want to process'
         return no_input_message
 
-    # ---changing multi-word strings to individual words (and removing any resulting duplicates words); Note3.
-    # Leaving 'original order' in this version for ease or comparison to previous, but...
-    # TODO: put in alphabetical order (again), and condense to ~equal-length lines
-    key_set = ('add', 'constraint', 'all', 'alter', 'column', 'table', 'and', 'any', 
-               'as', 'asc', 'backup', 'database', 'between', 'case', 'check', 
-               'create', 'index', 'or', 'replace', 'view', 
-               'procedure', 'unique', 'default', 
-               'delete', 'desc', 'distinct', 'drop', 
-               'exec', 'exists', 'foreign', 'key', 
-               'from', 'full', 'outer' , 'join', 'group', 'by', 'having', 'in', 'inner', 'insert', 'into', 
-               'select', 'is', 'not', 'left', 'like', 'limit', 
-               'order', 'primary', 'right', 
-               'rownum', 'top', 'set',  
-               'truncate', 'union', 'update', 'values', 'where',
+    # ---now in alphabetical order; Note3.
+    key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
+               'column', 'constraint', 'create', 'database', 'default', 'delete', 'desc', 'distinct', 'drop', 
+               'exec', 'exists', 'foreign', 'from', 'full', 'group', 'having', 'in', 'index', 'inner', 
+               'insert', 'into', 'is', 'join', 'key', 'left', 'like', 'limit', 'not', 'or', 'order', 'outer', 
+               'primary', 'procedure', 'replace', 'right', 'rownum', 'select', 'set', 'table', 'top', 
+               'truncate', 'union', 'unique', 'update', 'values', 'view', 'where'
 		        ) 
 
     semicolon = False
