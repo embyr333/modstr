@@ -1,12 +1,15 @@
-# 19th commit - added ability to process multiple statements 
-# (as deliniated by semi-colons)
+'''
+20th commit - Replaced the now-ineffective 'no input' (s == '') statement 
+in upper_SQL_keywords() with equivalent statement in process_statements()
+'''
+
 
 # TODO: Write a README file
 
 
 def upper_SQL_keywords(s: str): # Note1
-    if s == '':
-        return 'Please enter the query string you want to process'
+    # if s == '':
+    #     return 'Please enter the query string you want to process'
 
     key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
                'column', 'constraint', 'create', 'database', 'default', 'delete', 'desc', 'distinct', 'drop', 
@@ -30,15 +33,7 @@ def upper_SQL_keywords(s: str): # Note1
     for i in range(len(s)):
         if s[i] == '\n':
             linebreak_indices.append(i)
-    # print(linebreak_indices) # temp check (I see a linebreak is indeed added at end)
 
-    # semicolon = False
-    # if s[-1] == ';':
-    #     semicolon = True
-    #     s = s[:-1]
-    # ---now processing semicolons in process_statements() instead, and provsionally 
-    # adding unconditionally if absent (see Note7)
-    
     sections = s.split('\'') # odd sections will be non-quoted items; Note2
     odd_sections = [sections[i] for i in range(len(sections)) if i % 2 == 0] # index is even for odds
     even_sections = [sections[i] for i in range(len(sections)) if i % 2 != 0] # index is odd for evens
@@ -73,12 +68,8 @@ def upper_SQL_keywords(s: str): # Note1
             lines.append(new_string[prev_index + 1 : i])
             prev_index = i
         lines.append(new_string[i+1:])
-        # print('lines are', lines) # temp check
         new_string = '\n'.join(lines)
     
-    # return new_string.rstrip() + ';' if semicolon else new_string
-    # ---now restoring semicolons in process_statements() instead, 
-    # (and decided to add it to only/last statement even if not present in input)
     return new_string.rstrip()
 
 
@@ -87,42 +78,34 @@ def upper_SQL_keywords(s: str): # Note1
 from tkinter import *
 root_widget = Tk()
 root_widget.title('modstr modifies strings - so far just has a function to capitalise SQL keywords in non-quoted substrings')
-
 root_widget.geometry("1000x500") # provisional width, height GUI
 
 Label(root_widget, text = 'Enter (SQL) text)').grid(row=0, column=0) # (1st row of grid, so row index is 0)
 
-input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10),
-                   height=10) # input textbox (on 2nd row)
-
-input_field.grid(row=1, column=0, padx=15) # ---added padding to move Text box(es) out from left side of windw
+input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10), height=10) # input textbox (on 2nd row)
+input_field.grid(row=1, column=0, padx=15) 
 
 output = StringVar()
 
 
-# ---adding to process each statement, as defined by semicolons, separately
 def process_statements(s: str): # Note7
+    if s == '': 
+        output_field.insert("end", 'Please enter the query string you want to process')
     statements = s.split(';') # If final statement has the semicolon, empty string is added, so...
     statements = statements[:-1] if statements[-1] == '' else statements # ...do this
     for statement in statements:
-        # print(upper_SQL_keywords(statement.strip())) # temp
         output_field.insert("end", upper_SQL_keywords((statement.strip())) + ';\n')
 
 
 def submit_click(): # actions for Submit button bekow
     output_field.delete('1.0', END) # clear any existing output
-    # output_field.insert("1.0", upper_SQL_keywords(input_field.get("1.0",'end').rstrip()))
-    process_statements(input_field.get("1.0",'end').rstrip()) # ---now pass through new fn 1st
+    process_statements(input_field.get("1.0",'end').rstrip()) 
 
 
 # 'Submit' button on 3rd row grid sets output text in 4th row; Note4
-Button(root_widget, text = 'Submit', 
-       command = submit_click, 
-       bg='#C8C8C8').grid(row=2, column=0)
+Button(root_widget, text = 'Submit', command = submit_click, bg='#C8C8C8').grid(row=2, column=0)
 
-output_field = Text(root_widget, width = 120, fg = 'blue', 
-                     font=("Courier", 10), height=10) # output textbox 
-
+output_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10), height=10) # output textbox 
 output_field.grid(row=3, column=0) # (located on 4th row)
 
 root_widget.mainloop()
