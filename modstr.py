@@ -1,9 +1,8 @@
-# 18th commit - added limited multi-line capacity.
-# Changed to use of Text boxes instead of single-line Entry fields so that...
-# - You can see the whole of any entry/output that exceeds field width (text wraps)
-# - Can process a statement written over multiple lines as long as there are no indentations
-# and no traling spaces before linebreaks.
-# Multiple statements cannot be reliably processed yet.
+# 19th commit - added ability to process multiple statements 
+# (as deliniated by semi-colons)
+
+# TODO: Write a README file
+
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
@@ -26,17 +25,19 @@ def upper_SQL_keywords(s: str): # Note1
               'radians', 'sin', 'cos', 'tan', 'cot'
               )
 
-    # ---adding to log input linebreaks to be restored at end of prcessing
+    # Log input linebreaks to be restored at end of prcessing; Note6
     linebreak_indices = []
     for i in range(len(s)):
         if s[i] == '\n':
             linebreak_indices.append(i)
-    print(linebreak_indices) # temp check (I see a linebreak is indeed added at end)
+    # print(linebreak_indices) # temp check (I see a linebreak is indeed added at end)
 
-    semicolon = False
-    if s[-1] == ';':
-        semicolon = True
-        s = s[:-1]
+    # semicolon = False
+    # if s[-1] == ';':
+    #     semicolon = True
+    #     s = s[:-1]
+    # ---now processing semicolons in process_statements() instead, and provsionally 
+    # adding unconditionally if absent (see Note7)
     
     sections = s.split('\'') # odd sections will be non-quoted items; Note2
     odd_sections = [sections[i] for i in range(len(sections)) if i % 2 == 0] # index is even for odds
@@ -64,7 +65,7 @@ def upper_SQL_keywords(s: str): # Note1
             new_list.append('\'' + even_sections[i] + '\'') # ...adding back quote marks*
     new_string = ' '.join(new_list)
 
-    # ---added to restore any linebreaks
+    # Restore any linebreaks
     if linebreak_indices != []:
         lines = []
         prev_index = -1
@@ -72,10 +73,13 @@ def upper_SQL_keywords(s: str): # Note1
             lines.append(new_string[prev_index + 1 : i])
             prev_index = i
         lines.append(new_string[i+1:])
-        print('lines are', lines) # temp check
+        # print('lines are', lines) # temp check
         new_string = '\n'.join(lines)
     
-    return new_string.rstrip() + ';' if semicolon else new_string
+    # return new_string.rstrip() + ';' if semicolon else new_string
+    # ---now restoring semicolons in process_statements() instead, 
+    # (and decided to add it to only/last statement even if not present in input)
+    return new_string.rstrip()
 
 
 # GUI...
@@ -91,18 +95,30 @@ Label(root_widget, text = 'Enter (SQL) text)').grid(row=0, column=0) # (1st row 
 input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10),
                    height=10) # input textbox (on 2nd row)
 
-input_field.grid(row=1, column=0) 
+input_field.grid(row=1, column=0, padx=15) # ---added padding to move Text box(es) out from left side of windw
 
 output = StringVar()
 
+
+# ---adding to process each statement, as defined by semicolons, separately
+def process_statements(s: str): # Note7
+    statements = s.split(';') # If final statement has the semicolon, empty string is added, so...
+    statements = statements[:-1] if statements[-1] == '' else statements # ...do this
+    for statement in statements:
+        # print(upper_SQL_keywords(statement.strip())) # temp
+        output_field.insert("end", upper_SQL_keywords((statement.strip())) + ';\n')
+
+
 def submit_click(): # actions for Submit button bekow
     output_field.delete('1.0', END) # clear any existing output
-    output_field.insert("1.0", upper_SQL_keywords(input_field.get("1.0",'end').rstrip()))
+    # output_field.insert("1.0", upper_SQL_keywords(input_field.get("1.0",'end').rstrip()))
+    process_statements(input_field.get("1.0",'end').rstrip()) # ---now pass through new fn 1st
+
 
 # 'Submit' button on 3rd row grid sets output text in 4th row; Note4
 Button(root_widget, text = 'Submit', 
        command = submit_click, 
-       bg='#C8C8C8').grid(row=2, column=0, padx=5)
+       bg='#C8C8C8').grid(row=2, column=0)
 
 output_field = Text(root_widget, width = 120, fg = 'blue', 
                      font=("Courier", 10), height=10) # output textbox 
@@ -148,20 +164,49 @@ if word in key_set or if word in fn_set:
 but that would open the possibility of mis-processing any column names that happened to be the 
 same as function names...something that might also happen for keywords, though probaby less likely?
 
+Note6: Can process a statement written over multiple lines as long as there  
+are no indentation sand no traling spaces before linebreaks.
+
+Note7: Multiple statements. as deliniated by semicolons, can be processed. 
+If the final  (or only) statement does not have a semicolon, one is added,
+though this could be changed if needed.
+
 
 Example1
 select first_name, last_name, gender from patients where gender is 'M';
+-->
 SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M';
 
 Example2 - a value in quotation marks has a word from keyword that should not be processed as a keyword
 select first_name, last_name, gender from patients where gender is 'M is gender';
+-->
 SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M is gender';
 
 Example3 - keyword adjacent to (terminal) semicolon
 select first_name, last_name from patients where allergies is null;
+-->
 SELECT first_name, last_name FROM patients WHERE allergies IS NULL;
 
 Example4 - no semicolon
 select first_name, last_name from patients where allergies is null
-SELECT first_name, last_name FROM patients WHERE allergies IS NULL
+-->
+SELECT first_name, last_name FROM patients WHERE allergies IS NULL;
+
+Example5 - all 4 above input together
+select first_name, last_name, gender from patients where gender is 'M';
+select first_name, last_name, gender from patients where gender is 'M is gender';
+select first_name, last_name from patients where allergies is null;
+select first_name, last_name from patients where allergies is null
+-->
+SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M';
+SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M is gender';
+SELECT first_name, last_name FROM patients WHERE allergies IS null;
+SELECT first_name, last_name FROM patients WHERE allergies IS null;
+
+Example6 - 2 statements on 1 input line
+select * from patients; select first_name where last_name = 'John;
+-->
+SELECT * FROM patients;
+SELECT first_name WHERE last_name = 'John';
+
 '''
