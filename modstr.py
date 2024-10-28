@@ -1,5 +1,9 @@
-# 17th commit - (provisonally) uppercase (MySQL) function names also 
-# (if written, s per convention, without a space before the opening parenthesis)
+# 18th commit - added limited multi-line capacity.
+# Changed to use of Text boxes instead of single-line Entry fields so that...
+# - You can see the whole of any entry/output that exceeds field width (text wraps)
+# - Can process a statement written over multiple lines as long as there are no indentations
+# and no traling spaces before linebreaks.
+# Multiple statements cannot be reliably processed yet.
 
 def upper_SQL_keywords(s: str): # Note1
     if s == '':
@@ -13,7 +17,6 @@ def upper_SQL_keywords(s: str): # Note1
                'truncate', 'union', 'unique', 'update', 'values', 'view', 'where'
                ) 
     
-    # ---added; Note5
     fn_set = ('sum', 'avg', 'count', 'min', 'max', 'ucase', 'lcase', 'mid', 'length', 'round', 'now', 'format', 
               'curdate', 'curtime', 'sysdate', 'current_date', 'current_time', 'day', 'month', 'year', 'hour', 
               'minute', 'second', 'date_format', 'ifnull', 'isnull', 'concat', 'replace', 'substring', 'trim', 
@@ -22,12 +25,19 @@ def upper_SQL_keywords(s: str): # Note1
               'floor', 'mod', 'rand', 'sign', 'sqrt', 'pow', 'truncate', 'log', 'exp', 'pi', 'degrees', 
               'radians', 'sin', 'cos', 'tan', 'cot'
               )
-    
+
+    # ---adding to log input linebreaks to be restored at end of prcessing
+    linebreak_indices = []
+    for i in range(len(s)):
+        if s[i] == '\n':
+            linebreak_indices.append(i)
+    print(linebreak_indices) # temp check (I see a linebreak is indeed added at end)
+
     semicolon = False
     if s[-1] == ';':
         semicolon = True
         s = s[:-1]
-
+    
     sections = s.split('\'') # odd sections will be non-quoted items; Note2
     odd_sections = [sections[i] for i in range(len(sections)) if i % 2 == 0] # index is even for odds
     even_sections = [sections[i] for i in range(len(sections)) if i % 2 != 0] # index is odd for evens
@@ -35,10 +45,9 @@ def upper_SQL_keywords(s: str): # Note1
     for i in range(len(odd_sections)):
         words = odd_sections[i].split()
         for j in range(len(words)):
-            word = words[j] # (---added to reduce repetitions of words[j] lookup expression)
+            word = words[j] 
             if word in key_set:
                 word = word.upper()
-            # ---added
             elif word.__contains__('('):  
                 p_index = word.index('(')
                 if word[:p_index] in fn_set: # Note5
@@ -55,6 +64,17 @@ def upper_SQL_keywords(s: str): # Note1
             new_list.append('\'' + even_sections[i] + '\'') # ...adding back quote marks*
     new_string = ' '.join(new_list)
 
+    # ---added to restore any linebreaks
+    if linebreak_indices != []:
+        lines = []
+        prev_index = -1
+        for i in linebreak_indices:
+            lines.append(new_string[prev_index + 1 : i])
+            prev_index = i
+        lines.append(new_string[i+1:])
+        print('lines are', lines) # temp check
+        new_string = '\n'.join(lines)
+    
     return new_string.rstrip() + ';' if semicolon else new_string
 
 
@@ -63,22 +83,30 @@ def upper_SQL_keywords(s: str): # Note1
 from tkinter import *
 root_widget = Tk()
 root_widget.title('modstr modifies strings - so far just has a function to capitalise SQL keywords in non-quoted substrings')
-root_widget.geometry("800x100") # provisional width, height GUI
+
+root_widget.geometry("1000x500") # provisional width, height GUI
 
 Label(root_widget, text = 'Enter (SQL) text)').grid(row=0, column=0) # (1st row of grid, so row index is 0)
 
-input_field = Entry(root_widget, width = 100, fg = 'blue', font=("Courier", 10)) # input textbox (on 2nd row)
+input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10),
+                   height=10) # input textbox (on 2nd row)
+
 input_field.grid(row=1, column=0) 
 
 output = StringVar()
 
+def submit_click(): # actions for Submit button bekow
+    output_field.delete('1.0', END) # clear any existing output
+    output_field.insert("1.0", upper_SQL_keywords(input_field.get("1.0",'end').rstrip()))
+
 # 'Submit' button on 3rd row grid sets output text in 4th row; Note4
 Button(root_widget, text = 'Submit', 
-       command = lambda: output.set(upper_SQL_keywords(input_field.get())), 
+       command = submit_click, 
        bg='#C8C8C8').grid(row=2, column=0, padx=5)
 
-output_field = Entry(root_widget, width = 100, fg = 'blue', textvariable=output, 
-                     state='readonly', font=("Courier", 10)) # output textbox 
+output_field = Text(root_widget, width = 120, fg = 'blue', 
+                     font=("Courier", 10), height=10) # output textbox 
+
 output_field.grid(row=3, column=0) # (located on 4th row)
 
 root_widget.mainloop()
@@ -122,7 +150,7 @@ same as function names...something that might also happen for keywords, though p
 
 
 Example1
-select first_name, last_name, gender FROM patients where gender is 'M';
+select first_name, last_name, gender from patients where gender is 'M';
 SELECT first_name, last_name, gender FROM patients WHERE gender IS 'M';
 
 Example2 - a value in quotation marks has a word from keyword that should not be processed as a keyword
