@@ -1,16 +1,11 @@
 '''
-20th commit - Replaced the now-ineffective 'no input' (s == '') statement 
-in upper_SQL_keywords() with equivalent statement in process_statements()
+21st commit - slight code re-org, tidy-up, GUI height tweak
 '''
 
-
-# TODO: Write a README file
+# TODO: Write a README file 
 
 
 def upper_SQL_keywords(s: str): # Note1
-    # if s == '':
-    #     return 'Please enter the query string you want to process'
-
     key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
                'column', 'constraint', 'create', 'database', 'default', 'delete', 'desc', 'distinct', 'drop', 
                'exec', 'exists', 'foreign', 'from', 'full', 'group', 'having', 'in', 'index', 'inner', 
@@ -73,21 +68,6 @@ def upper_SQL_keywords(s: str): # Note1
     return new_string.rstrip()
 
 
-# GUI...
-
-from tkinter import *
-root_widget = Tk()
-root_widget.title('modstr modifies strings - so far just has a function to capitalise SQL keywords in non-quoted substrings')
-root_widget.geometry("1000x500") # provisional width, height GUI
-
-Label(root_widget, text = 'Enter (SQL) text)').grid(row=0, column=0) # (1st row of grid, so row index is 0)
-
-input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10), height=10) # input textbox (on 2nd row)
-input_field.grid(row=1, column=0, padx=15) 
-
-output = StringVar()
-
-
 def process_statements(s: str): # Note7
     if s == '': 
         output_field.insert("end", 'Please enter the query string you want to process')
@@ -97,10 +77,24 @@ def process_statements(s: str): # Note7
         output_field.insert("end", upper_SQL_keywords((statement.strip())) + ';\n')
 
 
-def submit_click(): # actions for Submit button bekow
+def submit_click(): # actions for Submit button in GUI below
     output_field.delete('1.0', END) # clear any existing output
     process_statements(input_field.get("1.0",'end').rstrip()) 
 
+
+# GUI...
+
+from tkinter import *
+root_widget = Tk()
+root_widget.title('modstr modifies strings - so far just has a function to capitalise SQL keywords in non-quoted substrings')
+root_widget.geometry("1000x410") # provisional width, height GUI
+
+Label(root_widget, text = 'Enter (SQL) text)').grid(row=0, column=0) # (1st row of grid, so row index is 0)
+
+input_field = Text(root_widget, width = 120, fg = 'blue', font=("Courier", 10), height=10) # input textbox (on 2nd row)
+input_field.grid(row=1, column=0, padx=15) 
+
+output = StringVar()
 
 # 'Submit' button on 3rd row grid sets output text in 4th row; Note4
 Button(root_widget, text = 'Submit', command = submit_click, bg='#C8C8C8').grid(row=2, column=0)
@@ -151,8 +145,8 @@ Note6: Can process a statement written over multiple lines as long as there
 are no indentation sand no traling spaces before linebreaks.
 
 Note7: Multiple statements. as deliniated by semicolons, can be processed. 
-If the final  (or only) statement does not have a semicolon, one is added,
-though this could be changed if needed.
+If the final (or only) statement does not have a semicolon, one is added,
+though this could be changed if wanted.
 
 
 Example1
