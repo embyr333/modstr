@@ -1,8 +1,8 @@
 '''
-21st commit - slight code re-org, tidy-up, GUI height tweak
+22nd commit - added small inactivated option to avoid adding semicolon to final/only statemeny (Note7b)
 '''
 
-# TODO: Write a README file 
+# TODO: Write a README file
 
 
 def upper_SQL_keywords(s: str): # Note1
@@ -12,7 +12,7 @@ def upper_SQL_keywords(s: str): # Note1
                'insert', 'into', 'is', 'join', 'key', 'left', 'like', 'limit', 'not', 'or', 'order', 'outer', 
                'primary', 'procedure', 'replace', 'right', 'rownum', 'select', 'set', 'table', 'top', 
                'truncate', 'union', 'unique', 'update', 'values', 'view', 'where'
-               ) 
+               ) # Note3
     
     fn_set = ('sum', 'avg', 'count', 'min', 'max', 'ucase', 'lcase', 'mid', 'length', 'round', 'now', 'format', 
               'curdate', 'curtime', 'sysdate', 'current_date', 'current_time', 'day', 'month', 'year', 'hour', 
@@ -21,7 +21,7 @@ def upper_SQL_keywords(s: str): # Note1
               'substring_index', 'find_in_set', 'lower', 'upper', 'abs', 'acos', 'asin', 'atan', 'ceiling', 
               'floor', 'mod', 'rand', 'sign', 'sqrt', 'pow', 'truncate', 'log', 'exp', 'pi', 'degrees', 
               'radians', 'sin', 'cos', 'tan', 'cot'
-              )
+              ) # Note5
 
     # Log input linebreaks to be restored at end of prcessing; Note6
     linebreak_indices = []
@@ -71,10 +71,13 @@ def upper_SQL_keywords(s: str): # Note1
 def process_statements(s: str): # Note7
     if s == '': 
         output_field.insert("end", 'Please enter the query string you want to process')
-    statements = s.split(';') # If final statement has the semicolon, empty string is added, so...
+        return # (not essential, just prevents pointless calls)
+    # terminal_semicolon = True if s[-1] == ';' else False # Note7b 
+    statements = s.split(';') # If final statement has a semicolon, empty string is added, so...
     statements = statements[:-1] if statements[-1] == '' else statements # ...do this
     for statement in statements:
         output_field.insert("end", upper_SQL_keywords((statement.strip())) + ';\n')
+    # if not terminal_semicolon: output_field.delete(f"{output_field.index('end')}-3c") # Note7b
 
 
 def submit_click(): # actions for Submit button in GUI below
@@ -109,25 +112,24 @@ root_widget.mainloop()
 Note1: Using the optional arg type specifier has the advantage of allowing
 IDE to make builtin method suggestions on typing dot after string etc.
 
-Note2: Much of the code is dealing with possibility of words from key_set used within a string in query, 
-i.e. NOT as keywords, so would NOT want to mod, e.g. 2nd 'is' in the following...
+Note2: Much of the code is dealing with possibility of words from key_set or fn_set used within a
+string in query, i.e. NOT as keywords, so would NOT want to modidy, e.g. 2nd 'is' in the following...
 select first_name, last_name, gender from patients where gender is 'M is gender';
 [Iteration 4 was dead end with shelx.split() - does not preserve quotation marks]
-The whole thing is now rather messy, with some (inefficient) string concatenation, 
+The whole thing is now rather messy, with some (inefficient) string concatenation etc., 
 and might be better tried with regex, but this approach is probably good enough for now.
 
 Note3: List from as per https://www.w3schools.com/sql/sql_ref_keywords.asp 
 but including each word of any multi-word phrases as separate entries, not including 'null'.
 I think this will still be suitable, but if not will have to change from
-odd_sections[i].split()  to a more complex search and replace strategy.
+odd_sections[i].split() to a more complex search and replace strategy.
 
 Note4: Provisionally replaced command value of submit_click with a lambda in 15th Commit, 
-as the submit_click() function (see below) was used only here, and had only 1 expression. 
-def submit_click():
+as the submit_click() function (see below) is used only there, and had only 1 expression. 
+def submit_click()...
     output.set(upper_SQL_keywords(input_field.get())) 
-    # input_field.delete(0, END) # (optional, to remove entered text after output appears)
-    # (or could add a 'Clear' button and associated function)
-...of course may revert if do add extra expressions such as the delete call
+...but later, changing from use of Entry to Text fields, needed a second expression (statement) 
+to clear the output box, so went back to using a regular function. 
 
 Note5: Decided (provisionally) to uppercase (MySQL) function names also. My current approach
 assumes (and only works for) 'conventionally written' calls with no space between function name
@@ -142,11 +144,14 @@ but that would open the possibility of mis-processing any column names that happ
 same as function names...something that might also happen for keywords, though probaby less likely?
 
 Note6: Can process a statement written over multiple lines as long as there  
-are no indentation sand no traling spaces before linebreaks.
+are no indentations and no traling spaces before linebreaks.
 
-Note7: Multiple statements. as deliniated by semicolons, can be processed. 
-If the final (or only) statement does not have a semicolon, one is added,
-though this could be changed if wanted.
+Note7: 
+(a) Multiple statements, as deliniated by semicolons, can be processed. 
+(b) If the final (or only) statement does not have a semicolon, one is added. 
+If you want to change this, uncomment the 2 statements marked 'Note8b'.
+(A button to choose behaviour could be added if desired, and if wanted, the choice
+state could be stored in a separete file, e.g. a simple text file.)
 
 
 Example1
