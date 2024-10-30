@@ -1,9 +1,6 @@
 '''
-22nd commit - added small inactivated option to avoid adding semicolon to final/only statemeny (Note7b)
+23rd commit - added a README file (I hope)
 '''
-
-# TODO: Write a README file
-
 
 def upper_SQL_keywords(s: str): # Note1
     key_set = ('add', 'all', 'alter', 'and', 'any', 'as', 'asc', 'backup', 'between', 'by', 'case', 'check', 
